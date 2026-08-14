@@ -1,121 +1,106 @@
-const { ApolloServer } = require("@apollo/server")
-const { startStandaloneServer } = require("@apollo/server/standalone")
+const { ApolloServer } = require("@apollo/server");
+const { startStandaloneServer } = require("@apollo/server/standalone");
 
 let authors = [
   {
     name: "Robert Martin",
-    id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a00-21a7-11e8-85e0-e19f34ba3a11",
     born: 1952,
   },
   {
     name: "Martin Fowler",
-    id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a01-21a7-11e8-85e0-e19f34ba3a11",
     born: 1963,
   },
   {
     name: "Fyodor Dostoevsky",
-    id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a02-21a7-11e8-85e0-e19f34ba3a11",
     born: 1821,
   },
   {
-    name: "Joshua Kerievsky", // birthyear not known
-    id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
+    name: "Joshua Kerievsky",
+    id: "ffa51a03-21a7-11e8-85e0-e19f34ba3a11",
   },
   {
-    name: "Sandi Metz", // birthyear not known
-    id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
+    name: "Sandi Metz",
+    id: "ffa51a04-21a7-11e8-85e0-e19f34ba3a11",
   },
-]
-
-/*
- * Suomi:
- * Saattaisi olla järkevämpää assosioida kirja ja sen tekijä tallettamalla kirjan yhteyteen tekijän nimen sijaan tekijän id
- * Yksinkertaisuuden vuoksi tallennamme kuitenkin kirjan yhteyteen tekijän nimen
- *
- * English:
- * It might make more sense to associate a book with its author by storing the author's id in the context of the book instead of the author's name
- * However, for simplicity, we will store the author's name in connection with the book
- *
- * Spanish:
- * Podría tener más sentido asociar un libro con su autor almacenando la id del autor en el contexto del libro en lugar del nombre del autor
- * Sin embargo, por simplicidad, almacenaremos el nombre del autor en conexión con el libro
- */
+];
 
 let books = [
   {
     title: "Clean Code",
     published: 2008,
     author: "Robert Martin",
-    id: "afa5b6f4-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a05-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["refactoring"],
   },
   {
     title: "Agile software development",
     published: 2002,
     author: "Robert Martin",
-    id: "afa5b6f5-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a06-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["agile", "patterns", "design"],
   },
   {
     title: "Refactoring, edition 2",
     published: 2018,
     author: "Martin Fowler",
-    id: "afa5de00-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a07-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["refactoring"],
   },
   {
     title: "Refactoring to patterns",
-    published: 2008,
+    published: 2004,
     author: "Joshua Kerievsky",
-    id: "afa5de01-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a08-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["refactoring", "patterns"],
   },
   {
     title: "Practical Object-Oriented Design, An Agile Primer Using Ruby",
     published: 2012,
     author: "Sandi Metz",
-    id: "afa5de02-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a09-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["refactoring", "design"],
   },
   {
-    title: "Crime and punishment",
+    title: "Crime and Punishment",
     published: 1866,
     author: "Fyodor Dostoevsky",
-    id: "afa5de03-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a0a-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["classic", "crime"],
   },
   {
     title: "Demons",
     published: 1872,
     author: "Fyodor Dostoevsky",
-    id: "afa5de04-344d-11e9-a414-719c6709cf3e",
+    id: "ffa51a0b-21a7-11e8-85e0-e19f34ba3a11",
     genres: ["classic", "revolution"],
   },
-]
+];
 
-/*
-  you can remove the placeholder query once your first one has been implemented 
-*/
-
+/* GraphQL */
 const typeDefs = `
   type Query {
-    dummy: Int
+    bookCount: Int!
+    authorCount: Int!
   }
-`
+`;
 
 const resolvers = {
   Query: {
-    dummy: () => 0,
+    bookCount: () => books.length,
+    authorCount: () => authors.length,
   },
-}
+};
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-})
+});
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
 }).then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+  console.log(`Server ready at ${url}`);
+});
