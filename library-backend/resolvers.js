@@ -33,6 +33,20 @@ const resolvers = {
   },
 
   Mutation: {
+    _resetDatabase: async () => {
+      if (process.env.NODE_ENV !== "test") {
+        throw new GraphQLError("Reset database is only available in test mode");
+      }
+
+      await Promise.all([
+        Author.deleteMany({}),
+        Book.deleteMany({}),
+        User.deleteMany({}),
+      ]);
+
+      return true;
+    },
+
     createUser: async (root, args) => {
       const user = new User({
         username: args.username,
