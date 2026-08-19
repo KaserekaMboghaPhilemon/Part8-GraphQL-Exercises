@@ -1,21 +1,33 @@
-const Author = require("./models/author");
 const Book = require("./models/book");
+const Author = require("./models/author");
 
 const resolvers = {
   Query: {
-    bookCount: async () => await Book.countDocuments(),
-    authorCount: async () => await Author.countDocuments(),
-    allBooks: async () => {
-      return await Book.find({}).populate("author");
-    },
-    allAuthors: async () => {
-      return await Author.find({});
-    },
-  },
+    bookCount: async () => Book.collection.countDocuments(),
+    authorCount: async () => Author.collection.countDocuments(),
 
-  Author: {
-    bookCount: async (root) => {
-      return await Book.countDocuments({ author: root._id });
+    allBooks: async (root, args) => {
+      const filter = {};
+
+      // Filter by genre using MongoDB's $in operator
+      if (args.genre) {
+        filter.genres = { $in: [args.genre] };
+      }
+
+      // Filter by author name if provided
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author });
+        if (!author) {
+          return [];
+        }
+        filter.author = author._id;
+      }
+
+      return Book.find(filter).populate("author");
+    },
+
+    allAuthors: async () => {
+      return Author.find({});
     },
   },
 
@@ -28,15 +40,10 @@ const resolvers = {
         await author.save();
       }
 
-      const book = new Book({
-        title: args.title,
-        author: author._id,
-        published: args.published,
-        genres: args.genres,
-      });
-
+      const book = new Book({ ...args, author: author._id });
       await book.save();
-      return await Book.findById(book._id).populate("author");
+
+      return book.populate("author");
     },
 
     editAuthor: async (root, args) => {
@@ -46,8 +53,7 @@ const resolvers = {
       }
 
       author.born = args.setBornTo;
-      await author.save();
-      return author;
+      return author.save();
     },
   },
 };
