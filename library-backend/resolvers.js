@@ -1,3 +1,4 @@
+const { GraphQLError } = require("graphql");
 const Book = require("./models/book");
 const Author = require("./models/author");
 
@@ -9,12 +10,10 @@ const resolvers = {
     allBooks: async (root, args) => {
       const filter = {};
 
-      // Filter by genre using MongoDB's $in operator
       if (args.genre) {
         filter.genres = { $in: [args.genre] };
       }
 
-      // Filter by author name if provided
       if (args.author) {
         const author = await Author.findOne({ name: args.author });
         if (!author) {
@@ -35,13 +34,34 @@ const resolvers = {
     addBook: async (root, args) => {
       let author = await Author.findOne({ name: args.author });
 
+      // Create author if not present
       if (!author) {
         author = new Author({ name: args.author });
-        await author.save();
+        try {
+          await author.save();
+        } catch (error) {
+          throw new GraphQLError(`Failed to create author: ${error.message}`, {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
 
       const book = new Book({ ...args, author: author._id });
-      await book.save();
+      try {
+        await book.save();
+      } catch (error) {
+        throw new GraphQLError(`Failed to save book: ${error.message}`, {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.title,
+            error,
+          },
+        });
+      }
 
       return book.populate("author");
     },
@@ -53,7 +73,17 @@ const resolvers = {
       }
 
       author.born = args.setBornTo;
-      return author.save();
+      try {
+        return await author.save();
+      } catch (error) {
+        throw new GraphQLError(`Failed to update author: ${error.message}`, {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.setBornTo,
+            error,
+          },
+        });
+      }
     },
   },
 };
