@@ -2,33 +2,39 @@ import { useState } from "react";
 import { useApolloClient, useMutation } from "@apollo/client/react";
 import { LOGIN } from "../queries";
 
-const LoginForm = ({ show, setToken }) => {
+const LoginForm = ({ show, setToken, setError, setPage }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const client = useApolloClient();
-  const [login, result] = useMutation(LOGIN, {
-    onCompleted: ({ login }) => {
-      const token = login.value;
-      localStorage.setItem("library-user-token", token);
+
+  const [login] = useMutation(LOGIN, {
+    onCompleted: (data) => {
+      const token = data.login.value;
       setToken(token);
+      localStorage.setItem("library-user-token", token);
       client.resetStore();
+      setPage("authors");
+      setUsername("");
+      setPassword("");
+    },
+    onError: (error) => {
+      if (setError) {
+        setError(error.message);
+      }
     },
   });
-
-  const submit = async (event) => {
-    event.preventDefault();
-    await login({ variables: { username, password } });
-    setUsername("");
-    setPassword("");
-  };
 
   if (!show) {
     return null;
   }
 
+  const submit = async (event) => {
+    event.preventDefault();
+    login({ variables: { username, password } });
+  };
+
   return (
     <div>
-      <h2>log in</h2>
       <form onSubmit={submit}>
         <div>
           username
@@ -47,9 +53,6 @@ const LoginForm = ({ show, setToken }) => {
         </div>
         <button type="submit">login</button>
       </form>
-      {result.error && (
-        <div style={{ color: "red" }}>{result.error.message}</div>
-      )}
     </div>
   );
 };

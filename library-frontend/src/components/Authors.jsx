@@ -19,13 +19,7 @@ const Authors = (props) => {
     return <div>loading...</div>;
   }
 
-  if (result.error) {
-    return <div style={{ color: "red" }}>Error: {result.error.message}</div>;
-  }
-
   const authors = result.data?.allAuthors ?? [];
-
-  // Initialize selected name to first author if not set
   const selectedName = name || (authors.length > 0 ? authors[0].name : "");
 
   const submit = async (event) => {
@@ -61,6 +55,7 @@ const Authors = (props) => {
         </tbody>
       </table>
 
+      {/* Only render birthyear form if user is logged in */}
       {props.token && (
         <>
           <h3>Set birthyear</h3>

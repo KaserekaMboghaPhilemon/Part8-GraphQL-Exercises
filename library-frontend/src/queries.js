@@ -39,10 +39,10 @@ export const CREATE_BOOK = gql`
       genres: $genres
     ) {
       title
-      published
       author {
         name
       }
+      published
       genres
       id
     }
@@ -63,15 +63,6 @@ export const LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       value
-    }
-  }
-`;
-
-export const ME = gql`
-  query {
-    me {
-      username
-      favoriteGenre
     }
   }
 `;
