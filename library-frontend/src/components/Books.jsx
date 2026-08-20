@@ -4,26 +4,26 @@ import { ALL_BOOKS } from "../queries";
 
 const Books = (props) => {
   const [selectedGenre, setSelectedGenre] = useState("all genres");
-  const result = useQuery(ALL_BOOKS);
+  const allBooksResult = useQuery(ALL_BOOKS);
+  const result = useQuery(ALL_BOOKS, {
+    variables: {
+      genre: selectedGenre === "all genres" ? null : selectedGenre,
+    },
+  });
 
   if (!props.show) {
     return null;
   }
 
-  if (result.loading) {
+  if (allBooksResult.loading || result.loading) {
     return <div>loading...</div>;
   }
 
   const books = result.data?.allBooks ?? [];
 
   // Extract all unique genres from the fetched books
-  const genres = Array.from(new Set(books.flatMap((b) => b.genres || [])));
-
-  // Filter books based on selected state
-  const booksToShow =
-    selectedGenre === "all genres"
-      ? books
-      : books.filter((b) => b.genres.includes(selectedGenre));
+  const allBooks = allBooksResult.data?.allBooks ?? [];
+  const genres = Array.from(new Set(allBooks.flatMap((b) => b.genres || [])));
 
   return (
     <div>
@@ -40,7 +40,7 @@ const Books = (props) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {booksToShow.map((a) => (
+          {books.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
