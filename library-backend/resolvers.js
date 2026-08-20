@@ -5,6 +5,10 @@ const Author = require("./models/author");
 const User = require("./models/user");
 
 const resolvers = {
+  Author: {
+    bookCount: async (root) => Book.countDocuments({ author: root._id }),
+  },
+
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),

@@ -11,6 +11,7 @@ const App = () => {
   const [token, setToken] = useState(
     localStorage.getItem("library-user-token"),
   );
+  const [error, setError] = useState("");
   const client = useApolloClient();
 
   const logout = () => {
@@ -43,8 +44,10 @@ const App = () => {
       <LoginForm
         show={page === "login"}
         setToken={setToken}
+        setError={setError}
         setPage={setPage}
       />
+      {error && <div style={{ color: "red" }}>login failed: {error}</div>}
     </div>
   );
 };

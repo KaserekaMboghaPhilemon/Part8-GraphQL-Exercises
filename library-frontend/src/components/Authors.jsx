@@ -63,6 +63,7 @@ const Authors = (props) => {
             <div>
               name
               <select
+                name="name"
                 value={selectedName}
                 onChange={({ target }) => setName(target.value)}
               >
@@ -74,8 +75,9 @@ const Authors = (props) => {
               </select>
             </div>
             <div>
-              born
+              <label htmlFor="author-born">born</label>
               <input
+                id="author-born"
                 type="number"
                 value={born}
                 onChange={({ target }) => setBorn(target.value)}

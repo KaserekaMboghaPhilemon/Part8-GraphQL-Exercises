@@ -14,6 +14,9 @@ const LoginForm = ({ show, setToken, setError, setPage }) => {
       localStorage.setItem("library-user-token", token);
       client.resetStore();
       setPage("authors");
+      if (setError) {
+        setError("");
+      }
       setUsername("");
       setPassword("");
     },
@@ -37,15 +40,17 @@ const LoginForm = ({ show, setToken, setError, setPage }) => {
     <div>
       <form onSubmit={submit}>
         <div>
-          username
+          <label htmlFor="login-username">username</label>
           <input
+            id="login-username"
             value={username}
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
-          password
+          <label htmlFor="login-password">password</label>
           <input
+            id="login-password"
             type="password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}
